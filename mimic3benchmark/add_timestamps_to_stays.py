@@ -31,6 +31,17 @@ def keep_rowids_with_storetimes(row, note):
             result.append(ids)
     return result
 
+#func taking a row and get unique row_ids matches and elimate no charttime notes
+def append_row_id_with_time(row, df):
+    aa = df.loc[(df['HADM_ID'] == row['HADM_ID']) & (df['SUBJECT_ID'] == row['SUBJECT_ID']) & (df["CHARTTIME"].notnull())]
+    result = [i for i in aa['ROW_ID']]
+    return result
+
+#func taking a row and get unique row_ids matches and elimate no charttime notes + radiology notes
+def append_row_id_time_rad(row, df):
+    aa = df.loc[(df['HADM_ID'] == row['HADM_ID']) & (df['SUBJECT_ID'] == row['SUBJECT_ID']) & (df["CATEGORY"] == "Radiology")]
+    result = [i for i in aa['ROW_ID']]
+    return result
 
 def time_diff (intime, storetime):
     exout = datetime.strptime(storetime, "%Y-%m-%d %H:%M:%S")
@@ -100,6 +111,10 @@ def main(args):
     all_stay['row_ids_both_times'] = all_stay.apply(keep_rowids_with_bothtimes, args=(note,), axis=1)
     print("Step 3...")
     all_stay['row_ids_storetimes'] = all_stay.apply(keep_rowids_with_storetimes, args=(note,), axis=1)
+    print("Step 4...")
+    all_stay['row_ids_radi'] = all_stay.apply(append_row_id_time_rad, args=(note,), axis=1)
+    print("Step 5...")
+    all_stay['row_ids_time'] = all_stay.apply(append_row_id_with_time, args=(note,), axis=1)
     
     print("Building mappings from admission to subject...")
     adm_to_subject_mapping = {id:[] for id in all_stay['SUBJECT_ID'].tolist()}
