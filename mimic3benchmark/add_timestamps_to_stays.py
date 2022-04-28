@@ -277,7 +277,7 @@ def main(args):
     with open("file2class.json", 'w') as fp:
         json.dump(file2class, fp)
 
-    all_stay.to_csv("all_stay_timestamp.csv", sep = '\t')
+    all_stay.to_csv("all_stay_timestamp.csv", encoding='utf-8', index=False)
 
 if __name__ == '__main__':
     main(sys.argv[1:])
